@@ -6,7 +6,7 @@ FingerFlexAid is a hardware-assisted exercise system for hands. It uses an ESP32
 
 ## Setup and Configuration
 
-1. **LAN Communication**: The ESP32 and Django server must be on the same **Local Area Network (LAN)** for proper communication.
+1. **LAN Communication**: The ESP32 and Django server must be on the same LAN for proper communication.
 
 2. **Modify Pin Numbers**: 
    - Update the `hardware.h` file with the correct pin numbers for your board. The pin configuration will depend on the specific ESP32 model being used.
