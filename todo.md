@@ -43,7 +43,7 @@ README.md                           # Project documentation
 ### Models
 - [x] (Models) Motor (and its tests) (Motor.hpp, Motor.cpp, MotorTests.cpp)
 - [x] (Models) Servo (and its tests) (Servo.hpp, Servo.cpp, ServoTests.cpp)
-- [ ] Create GloveState class
+- [x] Create GloveState class
   - Track overall glove state
   - Coordinate multiple devices
   - Safety monitoring
