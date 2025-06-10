@@ -5,7 +5,7 @@
 namespace FingerFlexAid
 {
 
-MockServo::MockServo(const std::string &id) : Servo(id), id_(id), updateThread_([this]() { updateAngle(); })
+MockServo::MockServo(const std::string &id) : id_(id), updateThread_([this]() { updateAngle(); })
 {
 }
 
