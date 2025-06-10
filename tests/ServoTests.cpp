@@ -1,4 +1,5 @@
 #include "../src/mock/MockServo.hpp"
+#include "../src/models/Servo.hpp"
 #include <chrono>
 #include <gtest/gtest.h>
 #include <thread>
@@ -41,7 +42,7 @@ TEST_F(MockServoTest, SetAngle)
     EXPECT_TRUE(servo->isMoving());
 
     std::this_thread::sleep_for(100ms);
-    EXPECT_LT(servo->getCurrentAngle(), 90); 
+    EXPECT_LT(servo->getCurrentAngle(), 90);
 }
 
 TEST_F(MockServoTest, SetAngleLimits)
@@ -51,10 +52,10 @@ TEST_F(MockServoTest, SetAngleLimits)
     EXPECT_EQ(minAngle, 30);
     EXPECT_EQ(maxAngle, 150);
 
-    EXPECT_FALSE(servo->setAngleLimits(150, 30)); 
+    EXPECT_FALSE(servo->setAngleLimits(150, 30));
     EXPECT_TRUE(servo->isError());
 
-    EXPECT_FALSE(servo->setAngleLimits(0, 181)); 
+    EXPECT_FALSE(servo->setAngleLimits(0, 181));
     EXPECT_TRUE(servo->isError());
 }
 
@@ -63,7 +64,7 @@ TEST_F(MockServoTest, SetSpeed)
     EXPECT_TRUE(servo->setSpeed(75));
     EXPECT_EQ(servo->getCurrentSpeed(), 75);
 
-    EXPECT_FALSE(servo->setSpeed(101)); 
+    EXPECT_FALSE(servo->setSpeed(101));
     EXPECT_TRUE(servo->isError());
 }
 
@@ -77,7 +78,7 @@ TEST_F(MockServoTest, Stop)
 
     auto angleAtStop = servo->getCurrentAngle();
     std::this_thread::sleep_for(100ms);
-    EXPECT_EQ(servo->getCurrentAngle(), angleAtStop); 
+    EXPECT_EQ(servo->getCurrentAngle(), angleAtStop);
 }
 
 TEST_F(MockServoTest, EmergencyStop)
@@ -137,7 +138,7 @@ TEST_F(MockServoTest, SpeedAffectsMovement)
     auto lowSpeedChange = std::abs(angleAfterLowSpeed - initialAngle);
 
     servo->setAngle(90);
-    std::this_thread::sleep_for(100ms); 
+    std::this_thread::sleep_for(100ms);
     servo->setSpeed(75);
     EXPECT_TRUE(servo->setAngle(45));
     initialAngle = servo->getCurrentAngle();
@@ -146,4 +147,51 @@ TEST_F(MockServoTest, SpeedAffectsMovement)
     auto highSpeedChange = std::abs(angleAfterHighSpeed - initialAngle);
 
     EXPECT_GT(highSpeedChange, lowSpeedChange);
+}
+
+TEST(ServoModelTest, ConstructionAndProperties)
+{
+    ServoImpl s(-90.0, 90.0, 100.0, "servo1");
+    EXPECT_DOUBLE_EQ(s.getAngle(), -90.0);
+    EXPECT_DOUBLE_EQ(s.getSpeed(), 100.0);
+    EXPECT_FALSE(s.isMoving());
+    EXPECT_FALSE(s.hasError());
+}
+
+TEST(ServoModelTest, SetAngleAndClamp)
+{
+    ServoImpl s(-45.0, 45.0, 50.0, "servo2");
+    s.setAngle(30.0);
+    EXPECT_DOUBLE_EQ(s.getAngle(), 30.0);
+    s.setAngle(100.0);
+    EXPECT_DOUBLE_EQ(s.getAngle(), 45.0);
+    s.setAngle(-100.0);
+    EXPECT_DOUBLE_EQ(s.getAngle(), -45.0);
+}
+
+TEST(ServoModelTest, SetSpeedAndMoving)
+{
+    ServoImpl s(-180.0, 180.0, 80.0, "servo3");
+    s.setSpeed(40.0);
+    EXPECT_DOUBLE_EQ(s.getSpeed(), 40.0);
+    EXPECT_TRUE(s.isMoving());
+    s.setSpeed(0.0);
+    EXPECT_DOUBLE_EQ(s.getSpeed(), 0.0);
+    EXPECT_FALSE(s.isMoving());
+    s.setSpeed(100.0);
+    EXPECT_DOUBLE_EQ(s.getSpeed(), 100.0);
+}
+
+TEST(ServoModelTest, ErrorSimulationAndClearing)
+{
+    ServoImpl s(-60.0, 60.0, 60.0, "servo4");
+    EXPECT_FALSE(s.hasError());
+    s.simulateError(true);
+    s.setAngle(30.0);
+    EXPECT_TRUE(s.hasError());
+    EXPECT_DOUBLE_EQ(s.getAngle(), -60.0);
+    s.simulateError(false);
+    EXPECT_FALSE(s.hasError());
+    s.setAngle(10.0);
+    EXPECT_DOUBLE_EQ(s.getAngle(), 10.0);
 }
