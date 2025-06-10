@@ -25,8 +25,8 @@ void MockServo::setAngle(double angle)
     {
         return;
     }
-    targetAngle_ = angle;
-    if (angle != currentAngle_)
+    targetAngle_.store(angle);
+    if (angle != currentAngle_.load())
     {
         isMoving_ = true;
     }
@@ -34,7 +34,7 @@ void MockServo::setAngle(double angle)
 
 double MockServo::getAngle() const
 {
-    return currentAngle_;
+    return currentAngle_.load();
 }
 
 void MockServo::setSpeed(double speed)
@@ -75,21 +75,21 @@ void MockServo::updateAngle()
     {
         if (!error_ && isMoving_)
         {
-            double angleDiff = targetAngle_ - currentAngle_;
+            double angleDiff = targetAngle_.load() - currentAngle_.load();
             if (std::abs(angleDiff) > 0.01)
             {
                 double step = std::clamp(currentSpeed_ / 8.0, 0.1, std::abs(angleDiff));
                 if (angleDiff > 0)
                 {
-                    currentAngle_ += step;
+                    currentAngle_.store(currentAngle_.load() + step);
                 }
                 else
                 {
-                    currentAngle_ -= step;
+                    currentAngle_.store(currentAngle_.load() - step);
                 }
-                if (std::abs(targetAngle_ - currentAngle_) <= 0.01)
+                if (std::abs(targetAngle_.load() - currentAngle_.load()) <= 0.01)
                 {
-                    currentAngle_ = targetAngle_;
+                    currentAngle_.store(targetAngle_.load());
                     isMoving_ = false;
                 }
             }
