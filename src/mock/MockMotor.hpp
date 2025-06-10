@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/MotorController.hpp"
+#include "models/Motor.hpp"
 #include <atomic>
 #include <chrono>
 #include <mutex>

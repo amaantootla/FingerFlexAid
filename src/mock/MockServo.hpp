@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/ServoController.hpp"
+#include "models/Servo.hpp"
 #include <atomic>
 #include <chrono>
 #include <mutex>
