@@ -57,3 +57,12 @@ vendor/
 # Logs
 *.log
 logs/
+
+# CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
