@@ -18,76 +18,35 @@ MockServo::~MockServo()
     }
 }
 
-bool MockServo::setAngle(uint16_t angle)
+void MockServo::setAngle(double angle)
 {
-    if (isError_)
+    if (error_)
     {
-        return false;
+        return;
     }
-
-    if (!validateAngle(angle))
-    {
-        std::lock_guard<std::mutex> lock(errorMutex_);
-        lastError_ = "Invalid angle value: " + std::to_string(angle);
-        isError_ = true;
-        return false;
-    }
-
     targetAngle_ = angle;
     if (angle != currentAngle_)
     {
         isMoving_ = true;
     }
-    return true;
 }
 
-bool MockServo::setSpeed(uint8_t speed)
-{
-    if (isError_)
-    {
-        return false;
-    }
-
-    if (!validateSpeed(speed))
-    {
-        std::lock_guard<std::mutex> lock(errorMutex_);
-        lastError_ = "Invalid speed value: " + std::to_string(speed);
-        isError_ = true;
-        return false;
-    }
-
-    targetSpeed_ = speed;
-    currentSpeed_ = speed;
-    return true;
-}
-
-bool MockServo::stop()
-{
-    if (isError_)
-    {
-        return false;
-    }
-
-    isMoving_ = false;
-    return true;
-}
-
-bool MockServo::emergencyStop()
-{
-    isMoving_ = false;
-    isError_ = true;
-
-    std::lock_guard<std::mutex> lock(errorMutex_);
-    lastError_ = "Emergency stop activated";
-    return true;
-}
-
-uint16_t MockServo::getCurrentAngle() const
+double MockServo::getAngle() const
 {
     return currentAngle_;
 }
 
-uint8_t MockServo::getCurrentSpeed() const
+void MockServo::setSpeed(double speed)
+{
+    if (error_)
+    {
+        return;
+    }
+    targetSpeed_ = speed;
+    currentSpeed_ = speed;
+}
+
+double MockServo::getSpeed() const
 {
     return currentSpeed_;
 }
@@ -97,15 +56,49 @@ bool MockServo::isMoving() const
     return isMoving_;
 }
 
-bool MockServo::isError() const
-{
-    return isError_;
-}
-
-std::optional<std::string> MockServo::getLastError() const
+void MockServo::simulateError(bool simulate)
 {
     std::lock_guard<std::mutex> lock(errorMutex_);
-    return lastError_;
+    error_ = simulate;
+    lastError_ = simulate ? "Simulated error" : "";
+}
+
+bool MockServo::hasError() const
+{
+    return error_;
+}
+
+void MockServo::updateAngle()
+{
+    while (!shouldStop_)
+    {
+        if (!error_ && isMoving_)
+        {
+            double angleDiff = targetAngle_ - currentAngle_;
+            if (std::abs(angleDiff) > 0.01)
+            {
+                double step = std::clamp(currentSpeed_ / 8.0, 0.1, std::abs(angleDiff));
+                if (angleDiff > 0)
+                {
+                    currentAngle_ += step;
+                }
+                else
+                {
+                    currentAngle_ -= step;
+                }
+                if (std::abs(targetAngle_ - currentAngle_) <= 0.01)
+                {
+                    currentAngle_ = targetAngle_;
+                    isMoving_ = false;
+                }
+            }
+            else
+            {
+                isMoving_ = false;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
 }
 
 bool MockServo::setAngleLimits(uint16_t minAngle, uint16_t maxAngle)
@@ -114,7 +107,7 @@ bool MockServo::setAngleLimits(uint16_t minAngle, uint16_t maxAngle)
     {
         std::lock_guard<std::mutex> lock(errorMutex_);
         lastError_ = "Invalid angle limits: min=" + std::to_string(minAngle) + ", max=" + std::to_string(maxAngle);
-        isError_ = true;
+        error_ = true;
         return false;
     }
 
