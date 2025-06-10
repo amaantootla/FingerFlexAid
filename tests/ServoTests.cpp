@@ -38,7 +38,7 @@ TEST_F(MockServoTest, InitialState)
 
 TEST_F(MockServoTest, SetAngle)
 {
-    EXPECT_TRUE(servo->setAngle(45));
+    EXPECT_TRUE(servo->setAngleChecked(45));
     EXPECT_TRUE(servo->isMoving());
 
     std::this_thread::sleep_for(100ms);
@@ -61,16 +61,16 @@ TEST_F(MockServoTest, SetAngleLimits)
 
 TEST_F(MockServoTest, SetSpeed)
 {
-    EXPECT_TRUE(servo->setSpeed(75));
+    EXPECT_TRUE(servo->setSpeedChecked(75));
     EXPECT_EQ(servo->getCurrentSpeed(), 75);
 
-    EXPECT_FALSE(servo->setSpeed(101));
+    EXPECT_FALSE(servo->setSpeedChecked(101));
     EXPECT_TRUE(servo->isError());
 }
 
 TEST_F(MockServoTest, Stop)
 {
-    EXPECT_TRUE(servo->setAngle(45));
+    EXPECT_TRUE(servo->setAngleChecked(45));
     EXPECT_TRUE(servo->isMoving());
 
     EXPECT_TRUE(servo->stop());
@@ -83,7 +83,7 @@ TEST_F(MockServoTest, Stop)
 
 TEST_F(MockServoTest, EmergencyStop)
 {
-    EXPECT_TRUE(servo->setAngle(45));
+    EXPECT_TRUE(servo->setAngleChecked(45));
     EXPECT_TRUE(servo->isMoving());
 
     EXPECT_TRUE(servo->emergencyStop());
@@ -118,7 +118,7 @@ TEST_F(MockServoTest, SimulateError)
 TEST_F(MockServoTest, SimulateHardwareDelay)
 {
     servo->simulateHardwareDelay(50ms);
-    EXPECT_TRUE(servo->setAngle(45));
+    EXPECT_TRUE(servo->setAngleChecked(45));
 
     auto initialAngle = servo->getCurrentAngle();
     std::this_thread::sleep_for(100ms);
@@ -130,17 +130,17 @@ TEST_F(MockServoTest, SimulateHardwareDelay)
 
 TEST_F(MockServoTest, SpeedAffectsMovement)
 {
-    servo->setSpeed(25);
-    EXPECT_TRUE(servo->setAngle(45));
+    servo->setSpeedChecked(25);
+    EXPECT_TRUE(servo->setAngleChecked(45));
     auto initialAngle = servo->getCurrentAngle();
     std::this_thread::sleep_for(50ms);
     auto angleAfterLowSpeed = servo->getCurrentAngle();
     auto lowSpeedChange = std::abs(angleAfterLowSpeed - initialAngle);
 
-    servo->setAngle(90);
+    servo->setAngleChecked(90);
     std::this_thread::sleep_for(100ms);
-    servo->setSpeed(75);
-    EXPECT_TRUE(servo->setAngle(45));
+    servo->setSpeedChecked(75);
+    EXPECT_TRUE(servo->setAngleChecked(45));
     initialAngle = servo->getCurrentAngle();
     std::this_thread::sleep_for(50ms);
     auto angleAfterHighSpeed = servo->getCurrentAngle();
