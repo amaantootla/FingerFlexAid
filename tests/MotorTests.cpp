@@ -1,4 +1,5 @@
 #include "../src/mock/MockMotor.hpp"
+#include "../src/models/Motor.hpp"
 #include <chrono>
 #include <gtest/gtest.h>
 #include <thread>
@@ -40,12 +41,12 @@ TEST_F(MockMotorTest, SetSpeed)
 
     std::this_thread::sleep_for(100ms);
     int16_t speedAfterShortTime = motor->getCurrentSpeed();
-    EXPECT_GT(speedAfterShortTime, 0);   
-    EXPECT_LT(speedAfterShortTime, 500); 
+    EXPECT_GT(speedAfterShortTime, 0);
+    EXPECT_LT(speedAfterShortTime, 500);
 
     std::this_thread::sleep_for(5000ms);
     int16_t speedAfterLongTime = motor->getCurrentSpeed();
-    EXPECT_NEAR(speedAfterLongTime, 500, 50); 
+    EXPECT_NEAR(speedAfterLongTime, 500, 50);
 }
 
 TEST_F(MockMotorTest, SetSpeedLimits)
@@ -132,7 +133,7 @@ TEST_F(MockMotorTest, SimulateHardwareDelay)
 
 TEST_F(MockMotorTest, SpeedAcceleration)
 {
-    motor->setAcceleration(500); 
+    motor->setAcceleration(500);
     EXPECT_TRUE(motor->setSpeed(1000));
 
     std::this_thread::sleep_for(50ms);
@@ -143,4 +144,54 @@ TEST_F(MockMotorTest, SpeedAcceleration)
 
     EXPECT_GT(speedAfterLongTime, speedAfterShortTime);
     EXPECT_LT(speedAfterLongTime, 1000);
+}
+
+TEST(MotorModelTest, ConstructionAndProperties)
+{
+    Motor m("motor1", 100.0, 2.5);
+    EXPECT_EQ(m.getId(), "motor1");
+    EXPECT_DOUBLE_EQ(m.getMaxSpeed(), 100.0);
+    EXPECT_DOUBLE_EQ(m.getMaxTorque(), 2.5);
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 0.0);
+    EXPECT_DOUBLE_EQ(m.getPosition(), 0.0);
+    EXPECT_FALSE(m.isMoving());
+    EXPECT_FALSE(m.isError());
+}
+
+TEST(MotorModelTest, SetSpeedAndMoving)
+{
+    Motor m("motor2", 50.0, 1.0);
+    m.setSpeed(25.0);
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 25.0);
+    EXPECT_TRUE(m.isMoving());
+    m.setSpeed(0.0);
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 0.0);
+    EXPECT_FALSE(m.isMoving());
+    m.setSpeed(100.0); // Should clamp to maxSpeed
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 50.0);
+    m.setSpeed(-100.0); // Should clamp to -maxSpeed
+    EXPECT_DOUBLE_EQ(m.getSpeed(), -50.0);
+}
+
+TEST(MotorModelTest, SetPosition)
+{
+    Motor m("motor3", 80.0, 1.5);
+    m.setPosition(123.45);
+    EXPECT_DOUBLE_EQ(m.getPosition(), 123.45);
+}
+
+TEST(MotorModelTest, ErrorSimulationAndClearing)
+{
+    Motor m("motor4", 60.0, 2.0);
+    EXPECT_FALSE(m.isError());
+    m.simulateError("test error");
+    EXPECT_TRUE(m.isError());
+    EXPECT_EQ(m.getErrorMessage(), "test error");
+    m.setSpeed(30.0); // Should have no effect
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 0.0);
+    m.clearError();
+    EXPECT_FALSE(m.isError());
+    EXPECT_EQ(m.getErrorMessage(), "");
+    m.setSpeed(10.0);
+    EXPECT_DOUBLE_EQ(m.getSpeed(), 10.0);
 }
