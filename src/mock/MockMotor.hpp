@@ -9,7 +9,7 @@
 namespace FingerFlexAid
 {
 
-class MockMotor : public MotorController
+class MockMotor : public Motor
 {
   public:
     explicit MockMotor(const std::string &id = "mock_motor");

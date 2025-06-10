@@ -9,7 +9,7 @@
 namespace FingerFlexAid
 {
 
-class MockServo : public ServoController
+class MockServo : public Servo
 {
   public:
     explicit MockServo(const std::string &id = "mock_servo");
@@ -32,7 +32,11 @@ class MockServo : public ServoController
     uint8_t getMaxSpeed() const override;
 
     void simulateHardwareDelay(std::chrono::milliseconds delay);
-    void simulateError(const std::string &error);
+    void simulateError(const std::string &error) override;
+    void simulateError(bool error)
+    {
+        simulateError(error ? "Simulated error (bool)" : "");
+    }
     void clearError();
     std::string getId() const
     {
