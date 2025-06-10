@@ -49,13 +49,13 @@ int main()
         if (tick % 5 == 0 && tick != 0)
         {
             mockMotor->simulateError("Simulated motor error");
-            mockServo->simulateError(true);
+            mockServo->simulateError("Simulated servo error");
         }
         // Every 7 ticks, clear errors
         if (tick % 7 == 0 && tick != 0)
         {
             mockMotor->clearError();
-            mockServo->simulateError(false);
+            mockServo->clearError();
         }
 
         glove.update();
@@ -65,11 +65,13 @@ int main()
         std::cout << "  RealMotor speed: " << realMotor->getSpeed()
                   << ", error: " << (realMotor->isError() ? realMotor->getErrorMessage() : "none") << "\n";
         std::cout << "  MockMotor speed: " << mockMotor->getCurrentSpeed()
-                  << ", error: " << (mockMotor->isError() ? *mockMotor->getLastError() : "none") << "\n";
+                  << ", error: " << (mockMotor->isError() ? mockMotor->getLastError().value_or("unknown") : "none")
+                  << "\n";
         std::cout << "  RealServo angle: " << realServo->getAngle()
                   << ", error: " << (realServo->hasError() ? "yes" : "no") << "\n";
-        std::cout << "  MockServo angle: " << mockServo->getCurrentAngle()
-                  << ", error: " << (mockServo->isError() ? *mockServo->getLastError() : "none") << "\n";
+        std::cout << "  MockServo angle: " << mockServo->getAngle()
+                  << ", error: " << (mockServo->hasError() ? mockServo->getLastError().value_or("unknown") : "none")
+                  << "\n";
         std::cout << "  GloveState error: " << (glove.hasError() ? "YES" : "no") << "\n";
         std::cout << "-----------------------------\n";
 
