@@ -5,7 +5,7 @@
 namespace FingerFlexAid
 {
 
-MockMotor::MockMotor(const std::string &id) : id_(id), updateThread_([this]() { updatePosition(); })
+MockMotor::MockMotor(const std::string &id) : Motor(id), id_(id), updateThread_([this]() { updatePosition(); })
 {
 }
 
