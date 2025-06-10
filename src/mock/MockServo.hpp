@@ -32,7 +32,7 @@ class MockServo : public Servo
     uint8_t getMaxSpeed() const override;
 
     void simulateHardwareDelay(std::chrono::milliseconds delay);
-    void simulateError(const std::string &error) override;
+    void simulateError(const std::string &error);
     void simulateError(bool error)
     {
         simulateError(error ? "Simulated error (bool)" : "");

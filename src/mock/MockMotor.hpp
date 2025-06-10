@@ -13,23 +13,23 @@ class MockMotor : public Motor
 {
   public:
     explicit MockMotor(const std::string &id = "mock_motor");
-    ~MockMotor() override;
+    ~MockMotor();
 
-    bool setSpeed(int16_t speed) override;
-    bool setPosition(int32_t position) override;
-    bool stop() override;
-    bool emergencyStop() override;
+    bool setSpeed(int16_t speed);
+    bool setPosition(int32_t position);
+    bool stop();
+    bool emergencyStop();
 
-    int16_t getCurrentSpeed() const override;
-    int32_t getCurrentPosition() const override;
-    bool isMoving() const override;
-    bool isError() const override;
-    std::optional<std::string> getLastError() const override;
+    int16_t getCurrentSpeed() const;
+    int32_t getCurrentPosition() const;
+    bool isMoving() const;
+    bool isError() const;
+    std::optional<std::string> getLastError() const;
 
-    bool setMaxSpeed(int16_t maxSpeed) override;
-    bool setAcceleration(uint16_t acceleration) override;
-    int16_t getMaxSpeed() const override;
-    uint16_t getAcceleration() const override;
+    bool setMaxSpeed(int16_t maxSpeed);
+    bool setAcceleration(uint16_t acceleration);
+    int16_t getMaxSpeed() const;
+    uint16_t getAcceleration() const;
 
     void simulateHardwareDelay(std::chrono::milliseconds delay);
     void simulateError(const std::string &error);
