@@ -38,18 +38,11 @@ README.md                           # Project documentation
 - [x] Create base ServoController interface
   - Define servo control methods (angle, speed, position)
   - Implement position constraints
-- [ ] Implement DeviceManager
-  - Device registration and management
-  - State synchronization
-  - Error handling and recovery
+- [x] (Core) DeviceManager (and its tests) (DeviceManagerImpl, DeviceManagerTests.cpp)
 
 ### Models
-- [ ] Implement Motor class
-  - Motor properties (max speed, torque, position)
-  - State tracking
-- [ ] Implement Servo class
-  - Servo properties (angle range, speed, position)
-  - State tracking
+- [ ] (Models) Motor (and its tests) (Motor.hpp, Motor.cpp, MotorTests.cpp)
+- [ ] (Models) Servo (and its tests) (Servo.hpp, Servo.cpp, ServoTests.cpp)
 - [ ] Create GloveState class
   - Track overall glove state
   - Coordinate multiple devices
@@ -62,9 +55,7 @@ README.md                           # Project documentation
 - [x] Create MockServo implementation
   - Simulate servo behavior
   - Generate realistic feedback
-- [ ] Implement MockHardwareBridge
-  - Simulate hardware communication
-  - Provide test scenarios
+- (Integration) MockHardwareBridge (and its tests) (MockHardwareBridge.hpp, MockHardwareBridge.cpp, MockHardwareBridgeTests.cpp)
 
 ### Utilities
 - [ ] Implement Logger
@@ -77,8 +68,7 @@ README.md                           # Project documentation
 ### Testing
 - [x] Set up testing framework
 - [x] Write unit tests for all components (for mock motor and servo)
-- [ ] Create integration tests
-- [ ] Implement mock hardware tests
+- (Integration) Integration tests (pending)
 
 ### Documentation
 - [ ] Write README.md
@@ -95,10 +85,3 @@ README.md                           # Project documentation
 - Implement proper error handling
 - Use modern C++ features (C++23)
 - Follow SOLID principles
-
-## Next Steps
-1. Set up project structure
-2. Create CMakeLists.txt
-3. Implement core interfaces
-4. Create mock implementations
-5. Begin testing framework
