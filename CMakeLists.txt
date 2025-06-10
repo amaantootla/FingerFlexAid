@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME}_lib
     src/mock/MockServo.cpp
     src/models/Motor.cpp
     src/models/Servo.cpp
+    src/models/GloveState.cpp
 )
 
 # Add include directories for the library
