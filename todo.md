@@ -44,9 +44,9 @@ README.md                           # Project documentation
 - [x] (Models) Motor (and its tests) (Motor.hpp, Motor.cpp, MotorTests.cpp)
 - [x] (Models) Servo (and its tests) (Servo.hpp, Servo.cpp, ServoTests.cpp)
 - [x] Create GloveState class
-  - Track overall glove state
-  - Coordinate multiple devices
-  - Safety monitoring
+  - [x] Track overall glove state
+  - [x] Coordinate multiple devices (real and mock interchangable)
+  - [x] Safety monitoring (thread safe, error polling, reset)
 
 ### Mock Hardware
 - [x] Create MockMotor implementation
